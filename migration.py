@@ -27,8 +27,8 @@ def initialize():
     git = Initializer()
     git.initalize()
     RTCInitializer.initialize()
-    if Differ.has_diff():
-        git.initialcommit()
+    #if Differ.has_diff():
+    git.initialcommit()
     Commiter.pushmaster()
 
 
@@ -36,7 +36,7 @@ def resume():
     shouter.shout("Found existing git repo in work directory, resuming migration...")
     config = configuration.get()
     os.chdir(config.workDirectory)
-    os.chdir(config.clonedGitRepoName)
+    #os.chdir(config.clonedGitRepoName)
     if Differ.has_diff():
         sys.exit("Your git repo has some uncommited changes, please add/remove them manually")
     RTCLogin.loginandcollectstreamuuid()
@@ -44,13 +44,13 @@ def resume():
     if config.previousstreamname:
         prepare()
     else:
-        Commiter.branch(config.streamname)
+        Commiter.branch("master")
         WorkspaceHandler().load()
 
 
 def existsrepo():
     config = configuration.get()
-    repodirectory = os.path.join(config.workDirectory, config.gitRepoName)
+    repodirectory = os.path.join(config.workDirectory, ".git")
     return os.path.exists(repodirectory)
 
 
@@ -68,6 +68,7 @@ def migrate():
     streamuuid = config.streamuuid
     streamname = config.streamname
     branchname = streamname + "_branchpoint"
+    branchname = "master"
 
     componentbaselineentries = rtc.getcomponentbaselineentriesfromstream(streamuuid)
     rtcworkspace.setnewflowtargets(streamuuid)
@@ -75,21 +76,26 @@ def migrate():
     history = rtc.readhistory(componentbaselineentries, streamname)
     changeentries = rtc.getchangeentriesofstreamcomponents(componentbaselineentries)
 
+    git.branch(branchname)
+
     if len(changeentries) > 0:
-        git.branch(branchname)
+        #git.branch(branchname)
+
         rtc.acceptchangesintoworkspace(rtc.getchangeentriestoaccept(changeentries, history))
         shouter.shout("All changes until creation of stream '%s' accepted" % streamname)
         git.pushbranch(branchname)
 
+
         rtcworkspace.setcomponentstobaseline(componentbaselineentries, streamuuid)
         rtcworkspace.load()
 
-    git.branch(streamname)
+   
     changeentries = rtc.getchangeentriesofstream(streamuuid)
     amountofacceptedchanges = rtc.acceptchangesintoworkspace(rtc.getchangeentriestoaccept(changeentries, history))
     if amountofacceptedchanges > 0:
-        git.pushbranch(streamname)
-        git.promotebranchtomaster(streamname)
+        git.pushbranch(branchname)
+        #git.pushbranch(streamname)
+        #git.promotebranchtomaster(streamname)
 
     RTCLogin.logout()
     summary(streamname)
@@ -156,9 +162,12 @@ def validate():
     streamname = config.streamname
     branchname = streamname + "_branchpoint"
     previousstreamname = config.previousstreamname
+    master = "master"
     offendingbranchname = None
     if not Commiter.checkbranchname(streamname):
         offendingbranchname = streamname
+    elif not Commiter.checkbranchname(master):
+        offendingbranchname = master
     elif not Commiter.checkbranchname(branchname):
         offendingbranchname = branchname
     elif not Commiter.checkbranchname(previousstreamname):

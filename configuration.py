@@ -38,6 +38,7 @@ def read(configname=None):
 
     workspace = shlex.quote(generalsection['WorkspaceName'])
     gitreponame = generalsection['GIT-Reponame']
+    gitrepourl = generalsection['GitRepoUrl']
 
     useexistingworkspace = generalsection.get('useExistingWorkspace', "False")
     useprovidedhistory = migrationsection.get('UseProvidedHistory', "False")
@@ -69,6 +70,7 @@ def read(configname=None):
     configbuilder.setignoredirectories(ignoredirectories)
     configbuilder.setincludecomponentroots(includecomponentroots).setcommitmessageprefix(commitmessageprefix)
     configbuilder.setgitattributes(gitattributes)
+    configbuilder.seturlgit(gitrepourl)
     global config
     config = configbuilder.build()
     return config
@@ -151,7 +153,12 @@ class Builder:
         self.includecomponentroots = ""
         self.commitmessageprefix = ""
         self.gitattributes = ""
-
+        self.gitrepourl = ""
+     
+    def seturlgit(self, url):
+        self.gitrepourl= url
+        return self
+    
     def setuser(self, user):
         self.user = user
         return self
@@ -256,7 +263,7 @@ class Builder:
                             self.streamname, self.gitreponame, self.useprovidedhistory,
                             self.useautomaticconflictresolution, self.maxchangesetstoaccepttogether, self.clonedgitreponame, self.rootFolder,
                             self.previousstreamname, self.ignorefileextensions, self.ignoredirectories, self.includecomponentroots,
-                            self.commitmessageprefix, self.gitattributes)
+                            self.commitmessageprefix, self.gitattributes, self.gitrepourl)
 
 
 class ConfigObject:
@@ -265,7 +272,7 @@ class ConfigObject:
                  workdirectory,
                  initialcomponentbaselines, streamname, gitreponame, useprovidedhistory,
                  useautomaticconflictresolution, maxchangesetstoaccepttogether, clonedgitreponame, rootfolder, previousstreamname,
-                 ignorefileextensions, ignoredirectories, includecomponentroots, commitmessageprefix, gitattributes):
+                 ignorefileextensions, ignoredirectories, includecomponentroots, commitmessageprefix, gitattributes, gitrepourl):
         self.user = user
         self.password = password
         self.stored = stored
@@ -293,6 +300,7 @@ class ConfigObject:
         self.includecomponentroots = includecomponentroots
         self.commitmessageprefix = commitmessageprefix
         self.gitattributes = gitattributes
+        self.gitrepourl = gitrepourl
 
     def getlogpath(self, filename):
         if not self.hasCreatedLogFolder:

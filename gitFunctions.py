@@ -13,6 +13,7 @@ class Initializer:
         self.repoName = config.gitRepoName
         self.clonedRepoName = config.clonedGitRepoName
         self.author = config.user
+        self.gitrepourl = config.gitrepourl
 
     @staticmethod
     def createignore():
@@ -58,10 +59,12 @@ class Initializer:
         Initializer.createattributes()
 
     def createrepo(self):
-        shell.execute("git init --bare " + self.repoName)
+        #shell.execute("git init --bare " + self.repoName)
+        shell.execute("git init")
         shouter.shout("Repository was created in " + os.getcwd())
-        shell.execute("git clone " + self.repoName)
-        os.chdir(self.clonedRepoName)
+        #shell.execute("git clone " + self.repoName)
+        shell.execute("git remote add origin " + self.gitrepourl)
+        #os.chdir(self.clonedRepoName)
 
     @staticmethod
     def setgitconfigs():
@@ -78,10 +81,17 @@ class Initializer:
         shouter.shout("Finished initial commit")
 
 
+    
+
 class Commiter:
     commitcounter = 0
     isattachedtoaworkitemregex = re.compile("^\d*:.*-")
     findignorepatternregex = re.compile("\{([^\{\}]*)\}")
+
+    @staticmethod
+    def initialmigration():
+        shell.execute("git add .")
+        shell.execute("git commit -m %s -q" % shell.quote("Migration"))
 
     @staticmethod
     def addandcommit(changeentry):
@@ -182,6 +192,8 @@ class Commiter:
             return shell.execute("git push -f origin " + branchname)
         else:
             return shell.execute("git push origin " + branchname)
+
+    
 
     @staticmethod
     def pushmaster():
