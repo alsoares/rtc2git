@@ -307,11 +307,11 @@ class ImportHandler:
     def is_user_aborting(change):
         shouter.shout("Last executed command: \n" + Changes.latest_accept_command)
         shouter.shout("Appropriate git commit command \n" + Commiter.getcommitcommand(change))
-        reallycontinue = "Do you want to continue? Y for continue, any key for abort"
-        if input(reallycontinue).lower() == "y":
-            return True
-        else:
-            sys.exit("Please check the output/log and rerun program with resume")
+        #reallycontinue = "Do you want to continue? Y for continue, any key for abort"
+        #if input(reallycontinue).lower() == "y":
+        #    return True
+        #else:
+        #    sys.exit("Please check the output/log and rerun program with resume")
 
     @staticmethod
     def getnextchangeset_fromsamecomponent(currentchangeentry, changeentries):

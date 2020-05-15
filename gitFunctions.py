@@ -99,7 +99,7 @@ class Commiter:
         Commiter.replaceauthor(changeentry.author, changeentry.email)
         shell.execute("git add -A")
 
-        Commiter.handle_captitalization_filename_changes()
+       # Commiter.handle_captitalization_filename_changes()
 
         shell.execute(Commiter.getcommitcommand(changeentry))
         Commiter.commitcounter += 1
@@ -117,7 +117,15 @@ class Commiter:
             directoryofnewfile = os.path.dirname(os.path.join(sandbox, newfilerelativepath))
             newfilename = os.path.basename(newfilerelativepath)
             cwd = os.getcwd()
+
+            if not os.path.exists(directoryofnewfile):
+                os.mkdir(sandbox)
+                os.mkdir(directoryofnewfile)
+
             os.chdir(directoryofnewfile)
+            
+
+
             files = shell.getoutput("git ls-files")
             for previousFileName in files:
                 was_same_file_name = newfilename.lower() == previousFileName.lower()

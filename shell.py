@@ -20,7 +20,7 @@ def getoutput(command, stripped=True):
     shout_command_to_log(command)
     try:
         outputasbytestring = check_output(command, shell=True)
-        output = outputasbytestring.decode(sys.stdout.encoding).splitlines()
+        output = outputasbytestring.decode(encoding).splitlines()
     except CalledProcessError as e:
         shouter.shout(e)
         output = ""
